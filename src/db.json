@@ -1,16 +1,63 @@
 {
-  "posts": [
+  "customers": [
     {
       "id": 1,
-      "title": "json-server",
-      "author": "typicode"
+      "name": "Kalles Grustransporter AB ",
+      "address": "Cementvägen 8, 111 11 Södertälje "
+    },
+    {
+      "id": 2,
+      "name": "Johans Bulk AB",
+      "address": "Balkvägen 12, 222 22 Stockholm"
+    },
+    {
+      "id": 3,
+      "name": "Haralds Värdetransporter AB",
+      "address": "Budgetvägen 1, 333 33 Uppsala"
     }
   ],
-  "comments": [
+  "vehicles": [
     {
       "id": 1,
-      "body": "some comment",
-      "postId": 1
+      "customerId":1,
+      "VIN": "YS2R4X20005399401",
+      "Reg": "DEF456"
+    },
+    {
+      "id": 2,
+      "customerId":1,
+      "VIN": "VLUR4X20009093588",
+      "Reg": "ABC123"
+    },
+    {
+      "id": 3,
+      "customerId":1,
+      "VIN": "VLUR4X20009048066",
+      "Reg": "GHI789"
+    },
+    {
+      "id": 4,
+      "customerId":2,
+      "VIN": "YS2R4X20005388011",
+      "Reg": "JKL012"
+    },
+    {
+      "id": 5,
+      "customerId":2,
+      "VIN": "YS2R4X20005387949",
+      "Reg": "MNO345"
+    },
+    {
+      "id": 6,
+      "customerId":3,
+      "VIN": "VLUR4X20009048066",
+      "Reg": "PQR678"
+    },
+    {
+      "id": 7,
+      "customerId":3,
+      "VIN": "YS2R4X20005387055",
+      "Reg": "STU901"
     }
   ],
   "profile": {
