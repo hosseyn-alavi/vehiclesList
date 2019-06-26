@@ -7,5 +7,9 @@ async function getAllCustomers() {
     const { data } = await APIClient.get("/customers");
     return data;
   }
+async function getAllVehicles() {
+    const { data } = await APIClient.get("/vehicles");
+    return data;
+  }
   
-export {getAllCustomers}
+export {getAllCustomers , getAllVehicles}
