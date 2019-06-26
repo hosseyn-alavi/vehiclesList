@@ -8,7 +8,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { AppBar, Typography, CircularProgress } from "@material-ui/core";
+import { AppBar, Typography, CircularProgress, InputLabel, Input, MenuItem, Select, Grid } from "@material-ui/core";
 import Done from "@material-ui/icons/Done"
 import Clear from "@material-ui/icons/Clear"
 
@@ -16,7 +16,7 @@ import Clear from "@material-ui/icons/Clear"
 const useStyles = theme => ({
   root: {
     width: "100%",
-    marginTop: theme.spacing(10),
+    //marginTop: theme.spacing(10),
     overflowX: "auto"
   },
   table: {
@@ -30,7 +30,10 @@ class VehicleList extends Component {
     this.state = {
       customers: [],
       vehicles: [],
-      loading:false
+      loading:false,
+      customerSelected:[],
+      filteredList:[],
+      statusSelected:null
     };
   }
 
@@ -63,11 +66,10 @@ class VehicleList extends Component {
         isAvalible:randomAvalibility
       };
     });
-    this.setState({ vehicles });
+    this.setState({ vehicles  , filteredList:vehicles});
   };
 
   getStatus = async ()=>{
-    
     await setInterval(()=>{
       this.setState({loading:true})
       let vehicles = this.state.vehicles
@@ -78,22 +80,89 @@ class VehicleList extends Component {
           isAvalible:Math.random() >= 0.5
         }
       ))
-      this.setState({vehicles:newVehicles})
+      this.setState({vehicles:newVehicles , filteredList:newVehicles})
+      this.filterByCustomer(this.state.customerSelected)
       setTimeout(()=>{this.setState({loading:false})},500)
-    } , 5000) 
+    } , 10000) 
+  }
+  handleChangeFilterCustomer(event){
+    this.setState({customerSelected:event.target.value})
+    this.filterByCustomer(event.target.value)
+    
+  }
+
+  filterByCustomer(list){
+    if(list.length > 0){
+      let filteredListByCustomer =[]
+    list.map((data,index)=>{
+      let dataList = this.state.vehicles.filter(vehicle =>(
+        vehicle.customerId === data.id
+      ))
+      filteredListByCustomer = [...filteredListByCustomer , ...dataList]
+    })
+    this.setState({filteredList:filteredListByCustomer})
+    }else{
+      this.setState({filteredList:this.state.vehicles})
+    }
+  }
+
+  handleChangeFilterStatus(){
+    
   }
 
   render() {
     const { classes } = this.props;
-    
-    
     return (
       <div>
-        <AppBar style={{ backgroundColor: "blue" }} position="fixed">
+        <AppBar style={{ backgroundColor: "blue" ,    position: "relative"}} >
           <Toolbar>
             <Typography> Vehicle List</Typography>
           </Toolbar>
         </AppBar>
+          <Paper style={{marginTop:20}}>
+         <Grid container justify="space-around">
+         <Grid item style={{margin:10}}>
+          <InputLabel htmlFor="select-multiple">Name</InputLabel>
+        <Select
+          multiple
+          value={this.state.customerSelected}
+          onChange={this.handleChangeFilterCustomer.bind(this)}
+          input={<Input id="select-multiple" />}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                //maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+              },
+            },
+          }}
+        >
+          {this.state.customers.map((name,index) => (
+            <MenuItem key={index} value={name} //style={this.getStyles(name, personName, theme)}
+            >
+              {name.name}
+            </MenuItem>
+          ))}
+        </Select>
+          </Grid>
+          <Grid item style={{marginTop:20}}> 
+          <InputLabel>Avalibility</InputLabel>
+          <Select
+          native
+          value={this.state.statusSelected}
+          onChange={this.handleChangeFilterStatus.bind(this)}
+          // inputProps={{
+          //   name: 'age',
+          //   id: 'age-native-simple',
+          // }}
+        >
+          <option value="">All Vehicles</option>
+          <option value={true}>Avalible</option>
+          <option value={false}>Not Avalible</option>
+        </Select>
+          </Grid>
+         </Grid>
+          </Paper>
         <Paper className={classes.root}>
           <Table className={classes.table}>
             <TableHead>
@@ -106,7 +175,7 @@ class VehicleList extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.state.vehicles.map((row,key) => (
+              {this.state.filteredList.map((row,key) => (
                 <TableRow key={key}>
                   <TableCell component="th" scope="row">
                     {row.name}
