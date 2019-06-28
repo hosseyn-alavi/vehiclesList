@@ -2,67 +2,66 @@ import React, { Component } from "react";
 import * as Api from "../../api/api";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import {
-  InputLabel,
-  Input,
-  MenuItem,
-  Select,
-  Grid
-} from "@material-ui/core";
+import { InputLabel, Input, MenuItem, Select, Grid } from "@material-ui/core";
 import Header from "../../components/header";
 import VehiclesTable from "../../components/table";
+import { strings } from "../../utils/strings";
 
 const useStyles = theme => ({
   root: {
     width: "100%",
     overflowX: "auto"
   },
-  statusSelect:{
+  statusSelect: {
     margin: "20px 80px 20px 0px",
-    [theme.breakpoints.down("xs")]: {
-      margin: "20px 80px 20px 80px",
+    [theme.breakpoints.down("md")]: {
+      margin: "20px 80px 20px 80px"
     }
-    
   }
-  
 });
 class VehicleList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableHeaders: [
-        "Customer Name",
-        "Customer Address",
-        "Vehicle VIN",
-        "Vehicle Reg",
-        "Availability"
-      ],
+      tableHeaders: [],
       customers: [],
       vehicles: [],
       loading: false,
       customerSelected: [],
       filteredList: [],
-      statusSelected: ""
+      statusSelected: "",
+      texts: {},
+      isEnglish:true
     };
   }
 
   componentDidMount() {
     //get customers list as first action
     this.getCustomers();
+    this.setState({ texts: strings });
+    this.setState({
+      tableHeaders: [
+        strings.customerName,
+        strings.customerAddress,
+        strings.vehicleVIN,
+        strings.vehicleReg,
+        strings.availability
+      ]
+    });
   }
 
   getCustomers = async () => {
-   try{
-     //get costomers from server and keep them in state
-    const data = await Api.getAllCustomers();
-    this.setState({ customers: data });
-    //call getVehicles function after successfuly getting customera
-    this.getVehicles();
-    //call interval function for get vehicles statuses
-    this.getStatus();
-   }catch{
-     alert("something wrong with server")
-   }
+    try {
+      //get costomers from server and keep them in state
+      const data = await Api.getAllCustomers();
+      this.setState({ customers: data });
+      //call getVehicles function after successfuly getting customera
+      this.getVehicles();
+      //call interval function for get vehicles statuses
+      this.getStatus();
+    } catch {
+      alert("something wrong with server");
+    }
   };
 
   getVehicles = async () => {
@@ -107,7 +106,7 @@ class VehicleList extends Component {
     }, 60000);
   };
 
-  //this function keeps customers selected in state for filer and call filter function 
+  //this function keeps customers selected in state for filer and call filter function
   handleChangeFilterCustomer(event) {
     this.setState({ customerSelected: event.target.value });
     this.filterList(event.target.value, this.state.statusSelected);
@@ -139,7 +138,7 @@ class VehicleList extends Component {
       list.map((data, index) => {
         newList = dataList.filter(vehicle => vehicle.customerId === data.id);
         filteredListByCustomer = [...filteredListByCustomer, ...newList];
-        return(index)
+        return index;
       });
       this.setState({ filteredList: filteredListByCustomer });
     } else {
@@ -147,21 +146,42 @@ class VehicleList extends Component {
     }
   }
 
-//keep the status selected and call filter function 
+  //keep the status selected and call filter function
   handleChangeFilterStatus(event) {
     this.setState({ statusSelected: event.target.value });
     this.filterList(this.state.customerSelected, event.target.value);
   }
+  changeLang(event) {
+    this.setState({isEnglish:!this.state.isEnglish})
+    if(event.target.checked){
+      strings.setLanguage("en");
+    }else{
+      strings.setLanguage("sv");
+    }
+    this.setState({
+      texts: strings,
+      tableHeaders: [
+        strings.customerName,
+        strings.customerAddress,
+        strings.vehicleVIN,
+        strings.vehicleReg,
+        strings.availability
+      ]
+    });
+  }
 
   render() {
-    const {classes} = this.props
+    const { texts } = this.state;
+    const { classes } = this.props;
     return (
       <div>
-        <Header title="Customer Vehicles List" />
+        <Header title={texts.customerVehiclesList} changeLang={this.changeLang.bind(this)} isEnglish={this.state.isEnglish}/>
         <Paper style={{ marginTop: 20 }}>
           <Grid container justify="space-between">
             <Grid item style={{ margin: "20px 0px 20px 80px" }}>
-              <InputLabel htmlFor="select-multiple">Customer Name</InputLabel>
+              <InputLabel htmlFor="select-multiple">
+                {texts.customerName}
+              </InputLabel>
               <Select
                 fullWidth
                 multiple
@@ -170,7 +190,7 @@ class VehicleList extends Component {
                 input={<Input id="select-multiple" />}
                 MenuProps={{
                   PaperProps: {
-                    style: {width: 250}
+                    style: { width: 250 }
                   }
                 }}
               >
@@ -182,15 +202,15 @@ class VehicleList extends Component {
               </Select>
             </Grid>
             <Grid item className={classes.statusSelect}>
-              <InputLabel>Availability</InputLabel>
+              <InputLabel>{texts.availability}</InputLabel>
               <Select
                 native
                 value={this.state.statusSelected}
                 onChange={this.handleChangeFilterStatus.bind(this)}
               >
-                <option value="">All Vehicles</option>
-                <option value={true}>Avalible</option>
-                <option value={false}>Not Avalible</option>
+                <option value="">{texts.allVehicles}</option>
+                <option value={true}>{texts.avalible}</option>
+                <option value={false}>{texts.notAvalible}</option>
               </Select>
             </Grid>
           </Grid>
