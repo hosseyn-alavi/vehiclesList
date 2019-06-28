@@ -17,9 +17,14 @@ const useStyles = theme => ({
     width: "100%",
     overflowX: "auto"
   },
-  table: {
-    minWidth: 650
+  statusSelect:{
+    margin: "20px 80px 20px 0px",
+    [theme.breakpoints.down("xs")]: {
+      margin: "20px 80px 20px 80px",
+    }
+    
   }
+  
 });
 class VehicleList extends Component {
   constructor(props) {
@@ -149,6 +154,7 @@ class VehicleList extends Component {
   }
 
   render() {
+    const {classes} = this.props
     return (
       <div>
         <Header title="Customer Vehicles List" />
@@ -175,7 +181,7 @@ class VehicleList extends Component {
                 ))}
               </Select>
             </Grid>
-            <Grid item style={{ margin: "20px 80px 20px 0px" }}>
+            <Grid item className={classes.statusSelect}>
               <InputLabel>Availability</InputLabel>
               <Select
                 native
